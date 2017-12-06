@@ -52,8 +52,15 @@ class InitialIndexes extends PhinxMigration
             list($parentTable, $relationColumn) = explode('/', $parent);
 
             foreach ($children as $childTable) {
+                $options = [];
+                if ($childTable === 'targets' && $relationColumn == 'credential_id') {
+                    $options = [
+                        'delete' => 'SET_NULL',
+                        'update'=> 'CASCADE'
+                    ];
+                }
                 $this->table($childTable)
-                    ->addForeignKey($relationColumn, $parentTable, 'id')
+                    ->addForeignKey($relationColumn, $parentTable, 'id', $options)
                     ->update();
             }
         }
