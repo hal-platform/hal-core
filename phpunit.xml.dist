@@ -28,6 +28,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory>src</directory>
+            <exclude>
+                <file>src/Database/PhinxMigration.php</file>
+            </exclude>
         </whitelist>
     </filter>
 
