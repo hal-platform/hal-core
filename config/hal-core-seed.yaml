@@ -1,0 +1,66 @@
+imports:
+    - resource: hal-core.yaml
+
+parameters:
+    application.name: 'HAL 9000 Seeder'
+
+    application.major.version: '1'
+    application.minor.version: '0'
+    application.patch.version: '0'
+    application.version: '%application.major.version%.%application.minor.version%.%application.patch.version%'
+
+    command.seed_file: 'seed:file'
+    command.seed_yaml: 'seed:yaml'
+
+    alice.options.locale: 'en_US'
+    alice.options.providers: []
+    alice.options.seed: 1
+    alice.options.parameters:
+        user.id: '%env(USER_ID)%'
+        user.handle: '%env(USER_HANDLE)%'
+        user.name: '%env(USER_NAME)%'
+        user.email: '%env(USER_EMAIL)%'
+        testapp.owner: '%env(TEST_APP_OWNER)%'
+        testapp.repo: '%env(TEST_APP_REPO)%'
+
+    doctrine.flush: true
+
+services:
+    application:
+        class: 'Symfony\Component\Console\Application'
+        arguments: ['%application.name%', '%application.version%']
+        calls:
+            - ['add', ['@command.seed.file']]
+            - ['add', ['@command.seed.yaml']]
+
+    command.seed.file:
+        class: 'Hal\Core\Seed\Command\SeedFileCommand'
+        arguments:
+            - '%command.seed_file%'
+            - '@alice.fixtures.loader'
+            - '@alice.persister.doctrine'
+
+    command.seed.yaml:
+        class: 'Hal\Core\Seed\Command\SeedYamlCommand'
+        arguments:
+            - '%command.seed_yaml%'
+            - '@alice.fixtures.loader'
+            - '@alice.persister.doctrine'
+            - '@parser.yaml'
+
+    alice.fixtures.loader:
+        class: 'Nelmio\Alice\Fixtures\Loader'
+        arguments:
+            - '%alice.options.locale%'
+            - '%alice.options.providers%'
+            - '%alice.options.seed%'
+            - '%alice.options.parameters%'
+
+    alice.persister.doctrine:
+        class: 'Nelmio\Alice\Persister\Doctrine'
+        arguments:
+            - '@doctrine.em'
+            - '%doctrine.flush%'
+
+    parser.yaml:
+        class: 'Symfony\Component\Yaml\Parser'

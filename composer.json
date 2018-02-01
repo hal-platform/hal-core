@@ -46,6 +46,10 @@
         "symfony/proxy-manager-bridge": "~3.3.0",
         "symfony/yaml":                 "~3.3.0",
 
+        "nelmio/alice": "~2.3",
+        "symfony/console": "~3.3.0",
+        "symfony/dotenv": "~3.3.0",
+
         "overtrue/phplint":             "~1.0",
         "phpstan/phpstan":              "~0.9",
         "squizlabs/php_codesniffer":    "~3.0",

@@ -1,0 +1,4 @@
+Hal\Core\Entity\Environment:
+    testEnvironment:
+        name: 'Test'
+        isProduction: false

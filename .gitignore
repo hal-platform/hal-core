@@ -13,3 +13,5 @@
 /composer.lock
 /vendor/
 
+# environment
+/config/.env

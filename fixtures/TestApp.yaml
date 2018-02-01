@@ -1,0 +1,23 @@
+include:
+    - TestAccount.yaml
+    - TestGithubRepository.yaml
+    - TestEnvironment.yaml
+    - TestGroup.yaml
+
+Hal\Core\Entity\Application:
+    testApp:
+        identifier: 'test-app'
+        name: 'Test App'
+        gitHub: '@testAppRepo'
+
+Hal\Core\Entity\Target:
+    testTarget:
+        name: 'Test Target'
+        application: '@testApp'
+        group: '@testGroup'
+
+Hal\Core\Entity\UserPermission:
+    testAppOwnerPermission:
+        type: 'owner'
+        user: '@testAccount'
+        application: '@testApp'

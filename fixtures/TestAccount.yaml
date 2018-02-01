@@ -1,0 +1,7 @@
+Hal\Core\Entity\User:
+    testAccount:
+        username: '<{user.handle}>'
+        name: '<{user.name}>'
+        email: '<{user.email}>'
+        isDisabled: 0
+

@@ -1,0 +1,5 @@
+Hal\Core\Entity\Group:
+    testGroup:
+        type: 'script'
+        name: 'Test Group'
+        environment: '@testEnvironment'

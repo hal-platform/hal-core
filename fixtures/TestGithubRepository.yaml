@@ -1,0 +1,5 @@
+Hal\Core\Entity\Application\GitHubApplication:
+    testAppRepo:
+        owner: '<{testapp.owner}>'
+        repository: '<{testapp.repo}>'
+
