@@ -231,7 +231,7 @@ class InitialSchema extends PhinxMigration
             ->addColumn('event_duration', 'integer',    [])
             ->addColumn('event_order',    'integer',    [])
             ->addColumn('message',        'string',     ['limit' => 200])
-            ->addColumn('parameters',     'binary',     $this->blobOptions('16mb'))
+            ->addColumn('parameters',     'blob',       $this->blobOptions('16mb'))
 
             ->addColumn('job_id',         'uuid',       ['null' => false])
             ->update();

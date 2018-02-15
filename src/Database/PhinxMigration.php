@@ -7,6 +7,7 @@
 
 namespace Hal\Core\Database;
 
+use Phinx\Db\Adapter\AdapterWrapper;
 use Phinx\Db\Adapter\MysqlAdapter;
 use Phinx\Db\Table;
 use Phinx\Migration\AbstractMigration;
@@ -75,7 +76,13 @@ class PhinxMigration extends AbstractMigration
     {
         $limit = (strtolower($size) === '16mb') ? MysqlAdapter::BLOB_MEDIUM : MysqlAdapter::BLOB_REGULAR;
 
-        return $this->getAdapter() instanceof MysqlAdapter ? ['limit' => $limit] : [];
+        $adapter = $this->getAdapter();
+
+        if ($adapter instanceof AdapterWrapper) {
+            $adapter = $adapter->getAdapter();
+        }
+
+        return $adapter instanceof MysqlAdapter ? ['limit' => $limit] : [];
     }
 
     /**
@@ -91,6 +98,12 @@ class PhinxMigration extends AbstractMigration
     {
         $limit = (strtolower($size) === '16mb') ? MysqlAdapter::TEXT_MEDIUM : MysqlAdapter::TEXT_REGULAR;
 
-        return $this->getAdapter() instanceof MysqlAdapter ? ['limit' => $limit] : [];
+        $adapter = $this->getAdapter();
+
+        if ($adapter instanceof AdapterWrapper) {
+            $adapter = $adapter->getAdapter();
+        }
+
+        return $adapter instanceof MysqlAdapter ? ['limit' => $limit] : [];
     }
 }
