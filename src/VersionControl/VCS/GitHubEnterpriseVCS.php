@@ -131,7 +131,7 @@ class GitHubEnterpriseVCS
             return null;
         }
 
-        $baseURL = $baseURL . '/api/v3/';
+        $baseURL = rtrim($baseURL, '/') . '/api/v3/';
 
         $options = $this->defaultGuzzleOptions + [
             'base_uri' => $baseURL,
