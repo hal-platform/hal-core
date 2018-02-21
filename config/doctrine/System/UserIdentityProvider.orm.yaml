@@ -23,6 +23,11 @@
             length: 50
             options: { default: 'internal' } # See IdentityProviderEnum for list of options
 
+        isOAuth:
+            column: 'is_oauth'
+            type: 'boolean'
+            options: { default: false }
+
         parameters:
             column: 'parameters'
             type: 'json_array'

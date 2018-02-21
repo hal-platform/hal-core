@@ -29,6 +29,11 @@ class UserIdentityProvider implements JsonSerializable
     protected $type;
 
     /**
+     * @var bool
+     */
+    protected $isOAuth;
+
+    /**
      * @param string $id
      * @param TimePoint|null $created
      */
@@ -36,6 +41,8 @@ class UserIdentityProvider implements JsonSerializable
     {
         $this->initializeEntity($id, $created);
         $this->initializeParameters();
+
+        $this->isOAuth = false;
 
         $this->name = '';
         $this->type = IdentityProviderEnum::defaultOption();
@@ -58,6 +65,14 @@ class UserIdentityProvider implements JsonSerializable
     }
 
     /**
+     * @return bool
+     */
+    public function isOAuth(): bool
+    {
+        return $this->isOAuth;
+    }
+
+    /**
      * @param string $name
      *
      * @return self
@@ -76,6 +91,17 @@ class UserIdentityProvider implements JsonSerializable
     public function withType(string $type): self
     {
         $this->type = IdentityProviderEnum::ensureValid($type);
+        return $this;
+    }
+
+    /**
+     * @param bool $isOAuth
+     *
+     * @return self
+     */
+    public function withIsOAuth(bool $isOAuth): self
+    {
+        $this->isOAuth = $isOAuth;
         return $this;
     }
 

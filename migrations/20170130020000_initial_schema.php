@@ -90,6 +90,7 @@ class InitialSchema extends PhinxMigration
         $this->createUUIDTable('system_identity_providers')
             ->addColumn('created',       'datetime', [])
             ->addColumn('name',          'string',   ['limit' => 100])
+            ->addColumn('is_oauth',      'boolean',  ['default' => false])
             ->addColumn('provider_type', 'string',   $this->enumOptions('internal'))
             ->addColumn('parameters',    'json',     [])
             ->update();
