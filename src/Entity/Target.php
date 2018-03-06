@@ -24,6 +24,7 @@ class Target implements JsonSerializable
     const PARAM_APP = 'application';        // eb, cd
     const PARAM_ENV = 'environment';        // eb
 
+    const PARAM_REGION = 'region';          // s3, cd, eb
     const PARAM_S3_METHOD = 's3_method';    // s3
     const PARAM_BUCKET = 'bucket';          // s3, cd, eb
     const PARAM_REMOTE_PATH = 'path';       // s3, cd, eb, rsync
