@@ -7,9 +7,11 @@
 
 namespace Hal\Core\AWS;
 
+use Aws\Credentials\Credentials;
 use Aws\Sdk;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use function GuzzleHttp\Promise\promise_for;
 use Hal\Core\Crypto\Encryption;
 use Hal\Core\Entity\Credential;
 use Hal\Core\Entity\Credential\AWSRoleCredential;
@@ -155,6 +157,54 @@ class CredentialProviderTest extends TestCase
 
         $this->decrypter
             ->shouldReceive('decrypt')
+            ->with('secretabcd')
+            ->andReturn('secret1234');
+
+        $provider = new CredentialProvider($this->logger, $this->decrypter, $this->em, $this->aws);
+        $credential = new AWSRoleCredential('123456789', 'role/my-custom-role');
+
+        $actual = $provider->getRoleCredentials($credential, 'us-east-1');
+
+        $this->assertTrue(is_callable($actual));
+    }
+
+    public function testUseHostCredentialsWithStaticCredentials()
+    {
+        $this->decrypter
+            ->shouldNotReceive('decrypt')
+            ->with('secret1234')
+            ->andReturn('lolok');
+
+        $AWSCredProvider = function(){
+            return promise_for(new Credentials('ok', 'lolokFake!'));
+        };
+        $provider = new CredentialProvider($this->logger, $this->decrypter, $this->em, $this->aws, $useHostCredentials = true);
+        $provider->setHostCredentials($AWSCredProvider);
+
+        $credential = new AWSStaticCredential('key1234Fake', 'secret1234');
+
+        $actual = $provider->getStaticCredentials($credential);
+
+        $this->assertSame($AWSCredProvider, $actual);
+    }
+
+    public function testAssumeCredentialsIsSuccessWithHostCredentials()
+    {
+        $credentials = (new Credential)
+            ->withDetails(new AWSStaticCredential('key1234', 'secretabcd'));
+
+        $repo = Mockery::mock(EntityRepository::class);
+        $this->em
+            ->shouldNotReceive('getRepository')
+            ->andReturn($repo);
+
+        $repo
+            ->shouldNotReceive('findOneBy')
+            ->with(['isInternal' => true, 'name' => 'Hal Internal Credentials - AWS'])
+            ->andReturn($credentials);
+
+        $this->decrypter
+            ->shouldNotReceive('decrypt')
             ->with('secretabcd')
             ->andReturn('secret1234');
 

@@ -63,12 +63,23 @@ class CredentialProvider
     private $credentialCache;
 
     /**
+     * @var bool
+     */
+    private $useHostCredentials;
+
+    /**
+     * @var callable
+     */
+    private $hostCredentials;
+
+    /**
      * @param LoggerInterface $logger
      * @param Encryption $encryption
      * @param EntityManagerInterface $em
      * @param Sdk $aws
+     * @param bool $useHostCredentials
      */
-    public function __construct(LoggerInterface $logger, Encryption $encryption, EntityManagerInterface $em, Sdk $aws)
+    public function __construct(LoggerInterface $logger, Encryption $encryption, EntityManagerInterface $em, Sdk $aws, bool $useHostCredentials = false)
     {
         $this->logger = $logger;
         $this->encryption = $encryption;
@@ -77,6 +88,23 @@ class CredentialProvider
 
         $this->stsLifetime = self::DEFAULT_STS_LIFETIME;
         $this->credentialName = self::DEFAULT_INTERNAL_CREDENTIAL_NAME;
+
+        $this->useHostCredentials = $useHostCredentials;
+        $this->hostCredentials = $this->getDefaultHostCredentials();
+    }
+
+    /**
+     * Provide your own callable function that resolves AWS credentials.
+     *
+     * @see https://docs.aws.amazon.com/aws-sdk-php/v3/guide/guide/credentials.html#using-a-credential-provider
+     *
+     * @param callable $provider
+     *
+     * @return void
+     */
+    public function setHostCredentials(callable $provider)
+    {
+        $this->hostCredentials = $provider;
     }
 
     /**
@@ -121,10 +149,14 @@ class CredentialProvider
     /**
      * @param AWSStaticCredential $credential
      *
-     * @return array|null
+     * @return callable|array|null
      */
     public function getStaticCredentials(AWSStaticCredential $credential)
     {
+        if ($this->useHostCredentials) {
+            return $this->hostCredentials;
+        }
+
         if (!$secret = $this->getSecret($credential)) {
             $this->logger->critical(self::ERR_INVALID_SECRET);
             return null;
@@ -140,7 +172,7 @@ class CredentialProvider
      * @param AWSRoleCredential $credential
      * @param string $region
      *
-     * @return CredentialProvider|callable|null
+     * @return AWSCredentialProvider|callable|null
      */
     public function getRoleCredentials(AWSRoleCredential $credential, $region)
     {
@@ -176,6 +208,13 @@ class CredentialProvider
      */
     private function getStsWithInternalCredentials($region)
     {
+        if ($this->useHostCredentials) {
+            return $this->aws->createSts([
+                'region' => $region,
+                'credentials' => $this->hostCredentials
+            ]);
+        }
+
         $credentials = $this->em
             ->getRepository(Credential::class)
             ->findOneBy(['isInternal' => true, 'name' => $this->credentialName]);
@@ -212,5 +251,13 @@ class CredentialProvider
         }
 
         return $secret = $this->encryption->decrypt($secret);
+    }
+
+    /**
+     * @return callable
+     */
+    private function getDefaultHostCredentials()
+    {
+        return AWSCredentialProvider::defaultProvider();
     }
 }
