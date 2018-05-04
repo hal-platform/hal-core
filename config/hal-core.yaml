@@ -62,9 +62,18 @@ services:
         factory: ['Doctrine\ORM\EntityManager', 'create']
         arguments:
             - '%doctrine.proxy.connection%'
-            - '@doctrine.config'
+            - '@doctrine.em.proxy.config'
             - '@doctrine.em.event_manager'
         configurator: ['@doctrine.em.configurator', 'configure']
+
+    doctrine.em.proxy.config:
+        class: 'Doctrine\ORM\Configuration'
+        factory: ['Doctrine\ORM\Tools\Setup', 'createConfiguration']
+        arguments:
+            - '%doctrine.config.dev_mode%'
+            - '%doctrine.path.proxy%'
+        calls:
+            - ['setMetadataDriverImpl', ['@doctrine.config.driver']]
 
     ############################################################################
     # DOCTRINE EM
