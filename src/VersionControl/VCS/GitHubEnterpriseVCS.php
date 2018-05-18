@@ -14,10 +14,9 @@ use GuzzleHttp\Client as GuzzleClient;
 use Hal\Core\Entity\System\VersionControlProvider;
 use Hal\Core\Parameters;
 use Hal\Core\Type\VCSProviderEnum;
+use Hal\Core\Utility\CachingTrait;
 use Hal\Core\Validation\ValidatorErrorTrait;
 use Hal\Core\VersionControl\Downloader\GitHubDownloader;
-use Hal\Core\VersionControl\GitHub\MCPCachePlugin;
-use QL\MCP\Cache\CachingTrait;
 
 class GitHubEnterpriseVCS
 {
@@ -27,19 +26,9 @@ class GitHubEnterpriseVCS
     const ERR_VCS_MISCONFIGURED = 'GitHub Enterprise Version Control Provider is misconfigured.';
 
     /**
-     * @var MCPCachePlugin
-     */
-    private $cachePlugin;
-
-    /**
      * @var Builder
      */
     private $httpClientBuilder;
-
-    /**
-     * @var bool
-     */
-    private $isCachedAdded;
 
     /**
      * @var array
@@ -47,15 +36,11 @@ class GitHubEnterpriseVCS
     private $defaultGuzzleOptions;
 
     /**
-     * @param MCPCachePlugin $cachePlugin
      * @param Builder $httpClientBuilder
      */
-    public function __construct(MCPCachePlugin $cachePlugin, Builder $httpClientBuilder)
+    public function __construct(Builder $httpClientBuilder)
     {
-        $this->cachePlugin = $cachePlugin;
         $this->httpClientBuilder = $httpClientBuilder;
-
-        $this->isCachedAdded = false;
         $this->defaultGuzzleOptions = [];
     }
 
@@ -79,7 +64,7 @@ class GitHubEnterpriseVCS
             return null;
         }
 
-        $key = sprintf('vcs_clients:%s:%s', $vcs->type(), $vcs->id());
+        $key = sprintf('vcs_clients.%s_%s', $vcs->type(), $vcs->id());
 
         $client = $this->getFromCache($key);
         if ($client instanceof Client) {
@@ -95,13 +80,6 @@ class GitHubEnterpriseVCS
 
         $client = new Client($this->httpClientBuilder, null, $enterpriseURL);
         $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
-
-        if (!$this->isCachedAdded) {
-            //Since the github client's cache only supports PSR6 and we don't have a PSR6 cache we need
-            //to make sure that the cache plugin we've written is placed at the end of the plugins to run.
-            $this->httpClientBuilder->addPlugin($this->cachePlugin);
-            $this->isCachedAdded = true;
-        }
 
         // Should only be in memory
         $this->setToCache($key, $client, 60 * 60);

@@ -7,7 +7,7 @@
 
 namespace Hal\Core\Utility;
 
-use QL\MCP\Common\Time\Clock;
+use QL\MCP\Common\Clock;
 use QL\MCP\Common\Time\TimePoint;
 
 trait TimeCreatedTrait

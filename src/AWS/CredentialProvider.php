@@ -12,12 +12,11 @@ use Aws\Credentials\CredentialProvider as AWSCredentialProvider;
 use Aws\Sdk;
 use Aws\Sts\StsClient;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Hal\Core\Crypto\Encryption;
 use Hal\Core\Entity\Credential;
-use Psr\Log\LoggerInterface;
 use Hal\Core\Entity\Credential\AWSRoleCredential;
 use Hal\Core\Entity\Credential\AWSStaticCredential;
+use Psr\Log\LoggerInterface;
 
 class CredentialProvider
 {
