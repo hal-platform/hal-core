@@ -64,8 +64,7 @@ return function (ContainerConfigurator $container) {
 
     // Doctrine Proxy
     $s
-        ->set('doctrine.em.proxy')
-            ->class(EntityManager::class)
+        ->set('doctrine.em.proxy', EntityManager::class)
             ->factory([EntityManager::class, 'create'])
             ->configurator([ref(DoctrineConfigurator::class), 'configure'])
             ->arg('$connection', '%doctrine.proxy.connection%')
@@ -73,8 +72,7 @@ return function (ContainerConfigurator $container) {
             ->arg('$eventManager', ref(EventManager::class))
             ->public()
 
-        ->set('doctrine.em.proxy.config')
-            ->class(Configuration::class)
+        ->set('doctrine.em.proxy.config', Configuration::class)
             ->factory([Setup::class, 'createConfiguration'])
             ->arg('$isDevMode', '%env(bool:HAL_ORM_DEVMODE_ON)%')
             ->arg('$proxyDir', '%env(HAL_ORM_PROXY_DIR)%')
@@ -83,8 +81,7 @@ return function (ContainerConfigurator $container) {
 
     // Doctrine Entity Manager
     $s
-        ->set('doctrine.em')
-            ->class(EntityManager::class)
+        ->set('doctrine.em', EntityManager::class)
             ->factory([EntityManager::class, 'create'])
             ->configurator([ref(DoctrineConfigurator::class), 'configure'])
             ->arg('$connection', '%doctrine.connection%')
@@ -99,8 +96,7 @@ return function (ContainerConfigurator $container) {
 
     // Doctrine Configuration
     $s
-        ->set('doctrine.config')
-            ->class(Configuration::class)
+        ->set('doctrine.config', Configuration::class)
             ->factory([Setup::class, 'createConfiguration'])
             ->arg('$isDevMode', '%env(bool:HAL_ORM_DEVMODE_ON)%')
             ->arg('$proxyDir', '%env(HAL_ORM_PROXY_DIR)%')
@@ -122,14 +118,12 @@ return function (ContainerConfigurator $container) {
 
     // Doctrine Cache
     $s
-        ->set('doctrine.cache')
-            ->class(Cache::class)
+        ->set('doctrine.cache', Cache::class)
             ->factory([ref('service_container'), 'get'])
             ->arg('$id', 'doctrine.cache.%env(HAL_ORM_CACHE)%')
             ->public()
 
-        ->set('doctrine.cache.memory')
-            ->class(ArrayCache::class)
+        ->set('doctrine.cache.memory', ArrayCache::class)
             ->public()
 
         ->set(CacheConfiguration::class)
