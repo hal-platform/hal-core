@@ -18,13 +18,12 @@ class DoctrineTest extends TestCase
     public function getEntityManager()
     {
         $root = realpath(__DIR__ . '/../../');
-        putenv("HAL_ROOT=${root}");
         putenv('HAL_DI_DISABLE_CACHE_ON=1');
 
         putenv('HAL_DB_USER=dummyuser');
         putenv('HAL_DB_PASSWORD=dummyuser');
         putenv('HAL_DB_HOST=localhost');
-        putenv('HAL_DB_PORT=NA');
+        putenv('HAL_DB_PORT=0');
         putenv('HAL_DB_NAME=NA');
         putenv('HAL_DB_DRIVER=NA');
 

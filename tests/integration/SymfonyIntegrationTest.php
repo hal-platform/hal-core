@@ -17,13 +17,12 @@ class SymfonyIntegrationTest extends TestCase
     public function testContainerCompiles()
     {
         $root = realpath(__DIR__ . '/../../');
-        putenv("HAL_ROOT=${root}");
         putenv('HAL_DI_DISABLE_CACHE_ON=1');
 
         putenv('HAL_DB_USER=NA');
         putenv('HAL_DB_PASSWORD=NA');
         putenv('HAL_DB_HOST=NA');
-        putenv('HAL_DB_PORT=NA');
+        putenv('HAL_DB_PORT=0');
         putenv('HAL_DB_NAME=NA');
         putenv('HAL_DB_DRIVER=pdo_sqlite');
 
@@ -34,7 +33,5 @@ class SymfonyIntegrationTest extends TestCase
 
         $this->assertInstanceOf(Cache::class, $container->get('doctrine.cache'));
         $this->assertInstanceOf(Cache::class, $container->get('doctrine.cache.memory'));
-
-        $this->assertTrue(is_callable($container->get('doctrine.random')));
     }
 }

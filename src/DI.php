@@ -91,9 +91,9 @@ class DI
      * @param ContainerBuilder $container
      * @param array $options
      *
-     * @return string|null
+     * @return string|array|null
      */
-    public static function cacheDI(ContainerBuilder $container, array $options): ?string
+    public static function cacheDI(ContainerBuilder $container, array $options)
     {
         $class = $options['class'] ?? '';
         if (!$class) {

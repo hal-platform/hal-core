@@ -1,3 +1,3 @@
 # Sample config used for unit tests
 imports:
-    - resource: 'hal-core.yaml'
+    - resource: 'config.php'

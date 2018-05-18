@@ -1,4 +1,3 @@
 parameters:
     excludes_analyse:
         - '%rootDir%/../../../src/Database/PhinxMigration.php'
-        - '%rootDir%/../../../src/VersionControl/GitHub/MCPCachePlugin.php'
