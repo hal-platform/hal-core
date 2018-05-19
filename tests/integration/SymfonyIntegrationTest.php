@@ -7,10 +7,10 @@
 
 namespace Hal\Core;
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManagerInterface;
 use Hal\Core\DI;
 use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
 
 class SymfonyIntegrationTest extends TestCase
 {
@@ -29,9 +29,9 @@ class SymfonyIntegrationTest extends TestCase
         $container = DI::buildDI([$root . '/config'], true);
 
         $this->assertInstanceOf(EntityManagerInterface::class, $container->get('doctrine.em.proxy'));
-        $this->assertInstanceOf(EntityManagerInterface::class, $container->get('doctrine.em'));
+        $this->assertInstanceOf(EntityManagerInterface::class, $container->get(EntityManagerInterface::class));
 
-        $this->assertInstanceOf(Cache::class, $container->get('doctrine.cache'));
-        $this->assertInstanceOf(Cache::class, $container->get('doctrine.cache.memory'));
+        $this->assertInstanceOf(CacheInterface::class, $container->get('doctrine.cache'));
+        $this->assertInstanceOf(CacheInterface::class, $container->get('doctrine.cache.memory'));
     }
 }

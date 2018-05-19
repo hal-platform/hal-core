@@ -2,8 +2,6 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -11,12 +9,17 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\RegionsConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Hal\Core\Database\DoctrineUtility\DoctrineConfigurator;
 use Hal\Core\RandomGenerator;
 use Hal\Core\Type\CompressedJSONArrayType;
 use Hal\Core\Type\TimePointType;
+use Psr\SimpleCache\CacheInterface;
+use Symfony\Component\Cache\Adapter\SimpleCacheAdapter;
+use Symfony\Component\Cache\DoctrineProvider;
+use Symfony\Component\Cache\Simple\ArrayCache;
 
 return function (ContainerConfigurator $container) {
 
@@ -42,6 +45,7 @@ return function (ContainerConfigurator $container) {
         ->set('doctrine.cache.lvl2_ttl',     600)
         ->set('doctrine.cache.lvl2_lock',    60)
         ->set('doctrine.cache.ttl',          60)
+        ->set('doctrine.cache.namespace',    'doctrine')
 
         ->set('doctrine.config.namespace_config_map', [
             '%env(HAL_ORM_CONFIG_DIR)%' => 'Hal\Core\Entity'
@@ -81,7 +85,7 @@ return function (ContainerConfigurator $container) {
 
     // Doctrine Entity Manager
     $s
-        ->set('doctrine.em', EntityManager::class)
+        ->set(EntityManagerInterface::class)
             ->factory([EntityManager::class, 'create'])
             ->configurator([ref(DoctrineConfigurator::class), 'configure'])
             ->arg('$connection', '%doctrine.connection%')
@@ -100,7 +104,7 @@ return function (ContainerConfigurator $container) {
             ->factory([Setup::class, 'createConfiguration'])
             ->arg('$isDevMode', '%env(bool:HAL_ORM_DEVMODE_ON)%')
             ->arg('$proxyDir', '%env(HAL_ORM_PROXY_DIR)%')
-            ->arg('$cache', ref('doctrine.cache'))
+            ->arg('$cache', ref(DoctrineProvider::class))
             ->call('setMetadataDriverImpl', [ref(YamlDriver::class)])
             ->call('setSecondLevelCacheEnabled', ['%doctrine.cache.lvl2_enabled%'])
             ->call('setSecondLevelCacheConfiguration', [ref(CacheConfiguration::class)])
@@ -118,7 +122,7 @@ return function (ContainerConfigurator $container) {
 
     // Doctrine Cache
     $s
-        ->set('doctrine.cache', Cache::class)
+        ->set('doctrine.cache', CacheInterface::class)
             ->factory([ref('service_container'), 'get'])
             ->arg('$id', 'doctrine.cache.%env(HAL_ORM_CACHE)%')
             ->public()
@@ -126,12 +130,19 @@ return function (ContainerConfigurator $container) {
         ->set('doctrine.cache.memory', ArrayCache::class)
             ->public()
 
+        ->set(DoctrineProvider::class)
+            ->arg('$pool', ref('doctrine.cache_psr6_to_psr16'))
+
+        ->set('doctrine.cache_psr6_to_psr16', SimpleCacheAdapter::class)
+            ->arg('$pool', ref('doctrine.cache'))
+            ->arg('$namespace', '%doctrine.cache.namespace%')
+
         ->set(CacheConfiguration::class)
             ->call('setCacheFactory', [ref(DefaultCacheFactory::class)])
 
         ->set(DefaultCacheFactory::class)
             ->arg('$cacheConfig', ref(RegionsConfiguration::class))
-            ->arg('$cache', ref('doctrine.cache'))
+            ->arg('$cache', ref(DoctrineProvider::class))
 
         ->set(RegionsConfiguration::class)
             ->arg('$defaultLifetime', '%doctrine.cache.lvl2_ttl%')
