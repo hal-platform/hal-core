@@ -102,7 +102,7 @@ class GitHubVCS
      */
     public function buildDownloader(VersionControlProvider $vcs): ?GitHubDownloader
     {
-        if ($vcs->type() !== VCSProviderEnum::TYPE_GITHUB_ENTERPRISE) {
+        if ($vcs->type() !== VCSProviderEnum::TYPE_GITHUB) {
             $this->addError(self::ERR_VCS_MISCONFIGURED);
             return null;
         }
