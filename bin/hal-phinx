@@ -6,6 +6,12 @@ set -eo pipefail
 work_dir="$( pwd )"
 cur_dir="$( cd "$( dirname "$0" )" && pwd )"
 root_dir="${cur_dir}/.."
+
+# Detect if this is used in as a composer dependency (in vendor/bin)
+if [ -f "${root_dir}/autoload.php" ] ; then
+    root_dir="${cur_dir}/../.."
+fi
+
 phinx_dir="${root_dir}/.phinx"
 
 box_version="${HAL_BOX_VERSION:-2.7.5}"
