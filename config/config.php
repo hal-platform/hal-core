@@ -17,6 +17,7 @@ use Hal\Core\RandomGenerator;
 use Hal\Core\Type\CompressedJSONArrayType;
 use Hal\Core\Type\TimePointType;
 use Psr\SimpleCache\CacheInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Cache\Adapter\SimpleCacheAdapter;
 use Symfony\Component\Cache\DoctrineProvider;
 use Symfony\Component\Cache\Simple\ArrayCache;
@@ -128,6 +129,7 @@ return function (ContainerConfigurator $container) {
             ->public()
 
         ->set('doctrine.cache.memory', ArrayCache::class)
+            ->call('setLogger', [ref('doctrine.cache.blackhole_logger')])
             ->public()
 
         ->set(DoctrineProvider::class)
@@ -136,6 +138,8 @@ return function (ContainerConfigurator $container) {
         ->set('doctrine.cache_psr6_to_psr16', SimpleCacheAdapter::class)
             ->arg('$pool', ref('doctrine.cache'))
             ->arg('$namespace', '%doctrine.cache.namespace%')
+
+        ->set('doctrine.cache.blackhole_logger', NullLogger::class)
 
         ->set(CacheConfiguration::class)
             ->call('setCacheFactory', [ref(DefaultCacheFactory::class)])
