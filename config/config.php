@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
+use Hal\Core\Cache\NamespacedCache;
 use Hal\Core\Database\DoctrineUtility\DoctrineConfigurator;
 use Hal\Core\RandomGenerator;
 use Hal\Core\Type\CompressedJSONArrayType;
@@ -42,11 +43,12 @@ return function (ContainerConfigurator $container) {
             'driver'   => '%env(HAL_DB_DRIVER)%'
         ])
 
-        ->set('doctrine.cache.lvl2_enabled', true)
-        ->set('doctrine.cache.lvl2_ttl',     600)
-        ->set('doctrine.cache.lvl2_lock',    60)
-        ->set('doctrine.cache.ttl',          60)
-        ->set('doctrine.cache.namespace',    'doctrine')
+        ->set('doctrine.cache.lvl2_enabled',        true)
+        ->set('doctrine.cache.lvl2_ttl',            600)
+        ->set('doctrine.cache.lvl2_lock',           60)
+        ->set('doctrine.cache.ttl',                 60)
+        ->set('doctrine.cache.namespace',           'doctrine')
+        ->set('doctrine.cache.namespace_delimiter', '.')
 
         ->set('doctrine.config.namespace_config_map', [
             '%env(HAL_ORM_CONFIG_DIR)%' => 'Hal\Core\Entity'
@@ -136,8 +138,13 @@ return function (ContainerConfigurator $container) {
             ->arg('$pool', ref('doctrine.cache_psr6_to_psr16'))
 
         ->set('doctrine.cache_psr6_to_psr16', SimpleCacheAdapter::class)
-            ->arg('$pool', ref('doctrine.cache'))
+            ->arg('$pool', ref('doctrine.cache_namespaced'))
+            ->call('setLogger', [ref('doctrine.cache.blackhole_logger')])
+
+        ->set('doctrine.cache_namespaced', NamespacedCache::class)
+            ->arg('$cache', ref('doctrine.cache'))
             ->arg('$namespace', '%doctrine.cache.namespace%')
+            ->arg('$delimiter', '%doctrine.cache.namespace_delimiter%')
 
         ->set('doctrine.cache.blackhole_logger', NullLogger::class)
 
