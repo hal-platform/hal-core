@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright (c) 2018 Quicken Loans Inc.
+ * @copyright (c) 2018 Steve Kluck
  *
  * For full license information, please view the LICENSE distributed with this source code.
  */
@@ -11,7 +11,7 @@ use Hal\Core\Entity\System\VersionControlProvider;
 use Hal\Core\Type\VCSProviderEnum;
 use Hal\Core\Validation\ValidatorErrorTrait;
 
-class VCS
+class VCSFactory
 {
     use ValidatorErrorTrait;
 
@@ -36,23 +36,21 @@ class VCS
 
     /**
      * @param string $type
-     * @param mixed $adapter
+     * @param VCSAdapterInterface $adapter
      *
      * @return void
      */
-    public function addAdapter(string $type, $adapter): void
+    public function addAdapter(string $type, VCSAdapterInterface $adapter): void
     {
         $this->adapters[$type] = $adapter;
     }
 
     /**
-     * The typehint of this needs to change to be less github specific.
-     *
      * @param VersionControlProvider $vcs
      *
-     * @return mixed|null
+     * @return VCSClientInterface|null
      */
-    public function authenticate(VersionControlProvider $vcs)
+    public function authenticate(VersionControlProvider $vcs): ?VCSClientInterface
     {
         $adapter = $this->adapters[$vcs->type()] ?? null;
         if (!$adapter) {
@@ -60,20 +58,10 @@ class VCS
             return null;
         }
 
-        if ($vcs->type() === VCSProviderEnum::TYPE_GITHUB) {
-            $vcsService = $adapter->buildClient($vcs);
+        $client = $adapter->buildClient($vcs);
 
-        } elseif ($vcs->type() === VCSProviderEnum::TYPE_GITHUB_ENTERPRISE) {
-            $vcsService = $adapter->buildClient($vcs);
-
-        } else {
-            $this->addError(self::ERR_VCS_MISCONFIGURED);
-            return null;
-        }
-
-        // if ($vcsService instanceof GitHubService) {
-        if ($vcsService) {
-            return $vcsService;
+        if ($client instanceof VCSClientInterface) {
+            return $client;
         }
 
         $this->importErrors($adapter->errors());
@@ -81,13 +69,11 @@ class VCS
     }
 
     /**
-     * The typehint of this needs to change to be less github specific.
-     *
      * @param VersionControlProvider $vcs
      *
-     * @return mixed|null
+     * @return VCSDownloaderInterface|null
      */
-    public function downloader(VersionControlProvider $vcs)
+    public function downloader(VersionControlProvider $vcs):? VCSDownloaderInterface
     {
         $adapter = $this->adapters[$vcs->type()] ?? null;
         if (!$adapter) {
@@ -95,20 +81,10 @@ class VCS
             return null;
         }
 
-        if ($vcs->type() === VCSProviderEnum::TYPE_GITHUB) {
-            $vcsDownloader = $adapter->buildDownloader($vcs);
+        $downloader = $adapter->buildDownloader($vcs);
 
-        } elseif ($vcs->type() === VCSProviderEnum::TYPE_GITHUB_ENTERPRISE) {
-            $vcsDownloader = $adapter->buildDownloader($vcs);
-
-        } else {
-            $this->addError(self::ERR_VCS_MISCONFIGURED);
-            return null;
-        }
-
-        // if ($vcsDownloader instanceof GitHubService) {
-        if ($vcsDownloader) {
-            return $vcsDownloader;
+        if ($downloader instanceof VCSDownloaderInterface) {
+            return $downloader;
         }
 
         $this->importErrors($adapter->errors());

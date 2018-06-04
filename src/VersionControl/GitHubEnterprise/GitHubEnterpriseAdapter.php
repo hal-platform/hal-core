@@ -1,11 +1,11 @@
 <?php
 /**
- * @copyright (c) 2018 Quicken Loans Inc.
+ * @copyright (c) 2018 Steve Kluck
  *
  * For full license information, please view the LICENSE distributed with this source code.
  */
 
-namespace Hal\Core\VersionControl\VCS;
+namespace Hal\Core\VersionControl\GitHubEnterprise;
 
 use Github\Client;
 use Github\HttpClient\Builder;
@@ -16,13 +16,16 @@ use Hal\Core\Parameters;
 use Hal\Core\Type\VCSProviderEnum;
 use Hal\Core\Utility\CachingTrait;
 use Hal\Core\Validation\ValidatorErrorTrait;
-use Hal\Core\VersionControl\Downloader\GitHubDownloader;
+use Hal\Core\VersionControl\VCSClientInterface;
+use Hal\Core\VersionControl\VCSDownloaderInterface;
+use Hal\Core\VersionControl\VCSAdapterInterface;
 
-class GitHubEnterpriseVCS
+class GitHubEnterpriseAdapter implements VCSAdapterInterface
 {
     use CachingTrait;
     use ValidatorErrorTrait;
 
+    const CACHE_KEY_TEMPLATE = 'vcs_clients.%s_%s';
     const ERR_VCS_MISCONFIGURED = 'GitHub Enterprise Version Control Provider is misconfigured.';
 
     /**
@@ -55,19 +58,19 @@ class GitHubEnterpriseVCS
     /**
      * @param VersionControlProvider $vcs
      *
-     * @return Client|null
+     * @return VCSClientInterface|null
      */
-    public function buildClient(VersionControlProvider $vcs): ?Client
+    public function buildClient(VersionControlProvider $vcs): ?VCSClientInterface
     {
         if ($vcs->type() !== VCSProviderEnum::TYPE_GITHUB_ENTERPRISE) {
             $this->addError(self::ERR_VCS_MISCONFIGURED);
             return null;
         }
 
-        $key = sprintf('vcs_clients.%s_%s', $vcs->type(), $vcs->id());
+        $key = sprintf(self::CACHE_KEY_TEMPLATE, $vcs->type(), $vcs->id());
 
         $client = $this->getFromCache($key);
-        if ($client instanceof Client) {
+        if ($client instanceof VCSClientInterface) {
             return $client;
         }
 
@@ -78,8 +81,9 @@ class GitHubEnterpriseVCS
             return null;
         }
 
-        $client = new Client($this->httpClientBuilder, null, $enterpriseURL);
-        $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
+        $sdk = new Client($this->httpClientBuilder, null, $enterpriseURL);
+        $sdk->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
+        $client = new GitHubEnterpriseClient($sdk, new ResultPager($sdk));
 
         // Should only be in memory
         $this->setToCache($key, $client, 60 * 60);
@@ -90,9 +94,9 @@ class GitHubEnterpriseVCS
     /**
      * @param VersionControlProvider $vcs
      *
-     * @return GitHubDownloader|null
+     * @return VCSDownloaderInterface|null
      */
-    public function buildDownloader(VersionControlProvider $vcs): ?GitHubDownloader
+    public function buildDownloader(VersionControlProvider $vcs): ?VCSDownloaderInterface
     {
         if ($vcs->type() !== VCSProviderEnum::TYPE_GITHUB_ENTERPRISE) {
             $this->addError(self::ERR_VCS_MISCONFIGURED);
@@ -122,6 +126,6 @@ class GitHubEnterpriseVCS
 
         $guzzle = new GuzzleClient($options);
 
-        return new GitHubDownloader($guzzle);
+        return new GitHubEnterpriseDownloader($guzzle);
     }
 }

@@ -1,3 +1,5 @@
 parameters:
     excludes_analyse:
         - '%rootDir%/../../../src/Database/PhinxMigration.php'
+    ignoreErrors:
+        - '#Call to an undefined method Github\\Api\\ApiInterface::#'
