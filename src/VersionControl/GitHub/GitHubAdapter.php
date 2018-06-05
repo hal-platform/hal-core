@@ -26,7 +26,7 @@ class GitHubAdapter implements VCSAdapterInterface
     use ValidatorErrorTrait;
 
     const CACHE_KEY_TEMPLATE = 'vcs_clients.%s_%s';
-    const DEFAULT_GITHUB_URL = 'https://github.com';
+    const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
     const ERR_VCS_MISCONFIGURED = 'GitHub.com Version Control Provider is misconfigured.';
 
     /**
@@ -48,7 +48,7 @@ class GitHubAdapter implements VCSAdapterInterface
      * @param Builder $httpClientBuilder
      * @param string $githubBaseURL
      */
-    public function __construct(Builder $httpClientBuilder, string $githubBaseURL)
+    public function __construct(Builder $httpClientBuilder, string $githubBaseURL = self::DEFAULT_GITHUB_API_URL)
     {
         $this->httpClientBuilder = $httpClientBuilder;
         $this->baseURL = rtrim($githubBaseURL, '/');
@@ -110,7 +110,7 @@ class GitHubAdapter implements VCSAdapterInterface
             return null;
         }
 
-        $baseURL = 'https://api.github.com';
+        $baseURL = $this->baseURL;
         $token = $vcs->parameter(Parameters::VCS_GH_TOKEN);
         if (!$baseURL || !$token) {
             $this->addError(self::ERR_VCS_MISCONFIGURED);

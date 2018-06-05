@@ -10,13 +10,17 @@ namespace Hal\Core\VersionControl\GitHub;
 use Github\Client;
 use Github\Exception\RuntimeException;
 use Github\ResultPager;
+use Hal\Core\Utility\CachingTrait;
 use Hal\Core\VersionControl\RefSortingTrait;
 use Hal\Core\VersionControl\VCSClientInterface;
 use Http\Client\Exception\RequestException;
 
 class GitHubClient implements VCSClientInterface
 {
+    use CachingTrait;
     use RefSortingTrait;
+
+    const CACHE_KEY_TEMPLATE = 'vcs_clients.gh.%s_%s';
 
     /**
      * @var Client
@@ -63,7 +67,16 @@ class GitHubClient implements VCSClientInterface
      */
     public function resolveRef(string $user, string $repo, string $reference): ?array
     {
-        return $this->resolver->resolve($user, $repo, $reference);
+        $key = sprintf(self::CACHE_KEY_TEMPLATE, md5($user . $repo), 'ref_' . md5($reference));
+
+        if (null !== ($latest = $this->getFromCache($key))) {
+            return $latest;
+        }
+
+        $resolved = $this->resolver->resolve($user, $repo, $reference);
+
+        $this->setToCache($key, $resolved, 30);
+        return $resolved;
     }
 
     /**
@@ -93,6 +106,12 @@ class GitHubClient implements VCSClientInterface
      */
     public function urlForRepository(string $user, string $repo): string
     {
+        $key = sprintf(self::CACHE_KEY_TEMPLATE, md5($user . $repo), 'repo_url');
+
+        if (null !== ($latest = $this->getFromCache($key))) {
+            return $latest;
+        }
+
         $api = $this->client->api('repo');
         $params = [$user, $repo];
 
@@ -100,6 +119,7 @@ class GitHubClient implements VCSClientInterface
 
         $url = $repo['html_url'] ?? '';
 
+        $this->setToCache($key, $url, 30);
         return $url;
     }
 
@@ -112,23 +132,35 @@ class GitHubClient implements VCSClientInterface
      */
     public function urlForReference(string $user, string $repo, string $ref): string
     {
+        $key = sprintf(self::CACHE_KEY_TEMPLATE, md5($user . $repo), 'ref_url_' . md5($ref));
+
+        if (null !== ($latest = $this->getFromCache($key))) {
+            return $latest;
+        }
+
         [$type, $resolved] = $this->resolveRefType($ref);
         $repoURL = $this->urlForRepository($user, $repo);
 
         switch ($type) {
             case 'commit':
-                return "${repoURL}/commit/${resolved}";
+                $url = "${repoURL}/commit/${resolved}";
+                break;
 
             case 'tag':
-                return "${repoURL}/releases/tag/${resolved}";
+                $url = "${repoURL}/releases/tag/${resolved}";
+                break;
 
             case 'pull':
-                return "${repoURL}/pull/${resolved}";
+                $url = "${repoURL}/pull/${resolved}";
+                break;
 
             case 'branch':
             default:
-                return "${repoURL}/tree/${resolved}";
+                $url = "${repoURL}/tree/${resolved}";
         }
+
+        $this->setToCache($key, $url, 30);
+        return $url;
     }
 
     /**
