@@ -85,8 +85,11 @@ class GitHubEnterpriseAdapter implements VCSAdapterInterface
         $sdk->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
         $client = new GitHubEnterpriseClient($sdk, new ResultPager($sdk));
 
+        // Pass along the this cache. Ideally this is configurable.
+        $client->setCache($this->cache());
+
         // Should only be in memory
-        $this->setToCache($key, $client, 60 * 60);
+        $this->setToCache($key, $client, 60);
 
         return $client;
     }

@@ -39,7 +39,7 @@ trait CachingTrait
     private function cache(): CacheInterface
     {
         if (!$this->cache) {
-            $this->cache = new ArrayCache;
+            $this->cache = new ArrayCache(0, false);
         }
 
         return $this->cache;
