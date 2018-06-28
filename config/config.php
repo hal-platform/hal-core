@@ -95,6 +95,7 @@ return function (ContainerConfigurator $container) {
             ->arg('$config', ref('doctrine.config'))
             ->arg('$eventManager', ref(EventManager::class))
             ->public()
+            ->lazy()
 
         ->set(DoctrineConfigurator::class)
             ->arg('$typeClasses', '%doctrine.config.custom_types%')
