@@ -154,9 +154,9 @@ class DI
      */
     private static function buildContainer(array $paths, $class, array $options)
     {
-        $container = static::buildDI($paths, !static::BUILD_AND_CACHE);
+        $container = static::buildDI($paths, !self::shouldBuildImmediately());
 
-        if (static::BUILD_AND_CACHE) {
+        if (self::shouldBuildImmediately()) {
             $cached = static::cacheDI($container, $options);
 
             $content = str_replace('<?php', '', $cached);
@@ -185,5 +185,13 @@ class DI
         $resolver = new LoaderResolver($loaders);
 
         return new DelegatingLoader($resolver);
+    }
+
+    /**
+     * @return bool
+     */
+    private static function shouldBuildImmediately(): bool
+    {
+        return static::BUILD_AND_CACHE;
     }
 }

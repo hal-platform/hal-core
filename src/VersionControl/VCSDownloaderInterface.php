@@ -20,7 +20,7 @@ interface VCSDownloaderInterface
      * @param string $commit
      * @param string $targetFile
      *
-     * @throws VersionControlException
+     * @throws VCSException
      *
      * @return bool
      */

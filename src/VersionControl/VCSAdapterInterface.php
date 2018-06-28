@@ -14,7 +14,7 @@ interface VCSAdapterInterface
     /**
      * @param VersionControlProvider $vcs
      *
-     * @throws VersionControlException
+     * @throws VCSException
      *
      * @return VCSClientInterface|null
      */
@@ -23,7 +23,7 @@ interface VCSAdapterInterface
     /**
      * @param VersionControlProvider $vcs
      *
-     * @throws VersionControlException
+     * @throws VCSException
      *
      * @return VCSDownloaderInterface|null
      */

@@ -13,7 +13,7 @@ use QL\MCP\Common\Time\TimePoint;
 trait TimeCreatedTrait
 {
     /**
-     * @var Clock
+     * @var Clock|null
      */
     private static $createdTimeGenerator;
 

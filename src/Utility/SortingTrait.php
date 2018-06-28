@@ -78,7 +78,7 @@ trait SortingTrait
     }
 
     /**
-     * @return Closure
+     * @return callable
      */
     public function applicationSorter()
     {
@@ -88,7 +88,7 @@ trait SortingTrait
     }
 
     /**
-     * @return Closure
+     * @return callable
      */
     public function organizationSorter()
     {
@@ -116,7 +116,7 @@ trait SortingTrait
 
 
     /**
-     * @return Closure
+     * @return callable
      */
     public function templateSorter()
     {

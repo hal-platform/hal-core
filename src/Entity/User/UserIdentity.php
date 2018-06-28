@@ -129,7 +129,7 @@ class UserIdentity implements JsonSerializable
             'parameters' => $this->parameters(),
 
             'provider_unique_id' => $this->providerUniqueID(),
-            'provider_id' => $this->provider() ? $this->provider()->id() : null
+            'provider_id' => $this->provider()->id()
         ];
 
         return $json;
