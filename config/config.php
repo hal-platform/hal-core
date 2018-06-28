@@ -78,6 +78,7 @@ return function (ContainerConfigurator $container) {
             ->arg('$config', ref('doctrine.em.proxy.config'))
             ->arg('$eventManager', ref(EventManager::class))
             ->public()
+            ->lazy()
 
         ->set('doctrine.em.proxy.config', Configuration::class)
             ->factory([Setup::class, 'createConfiguration'])
