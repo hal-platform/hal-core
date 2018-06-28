@@ -7,7 +7,9 @@
 
 namespace Hal\Core;
 
+use ProxyManager\Configuration;
 use RuntimeException;
+use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\DelegatingLoader;
@@ -41,6 +43,10 @@ class DI
         $container = new ContainerBuilder;
 
         $loader = static::buildConfigLoader($container, $paths);
+
+        if (class_exists(Configuration::class) && class_exists(RuntimeInstantiator::class)) {
+            $container->setProxyInstantiator(new RuntimeInstantiator);
+        }
 
         $extensions = [];
         foreach (static::DI_EXTENSIONS as $extClass) {
