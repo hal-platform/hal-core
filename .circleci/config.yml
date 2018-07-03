@@ -98,7 +98,7 @@ jobs:
 
             - run:
                 name: 'Run code formatting check'
-                command: 'compose run-script sniff'
+                command: 'composer run-script sniff'
 
     security_tests:
         working_directory: '~/project'
