@@ -41,7 +41,7 @@ class UserPermission implements JsonSerializable
      * @param string $id
      * @param TimePoint|null $created
      */
-    public function __construct($type = '', $id = '', TimePoint $created = null)
+    public function __construct($type = '', $id = '', ?TimePoint $created = null)
     {
         $this->initializeEntity($id, $created);
         $this->initializeScopes();
@@ -104,7 +104,7 @@ class UserPermission implements JsonSerializable
 
             'application_id' => $this->application() ? $this->application()->id() : null,
             'organization_id' => $this->organization() ? $this->organization()->id() : null,
-            'environment_id' => $this->environment() ? $this->environment()->id() : null
+            'environment_id' => $this->environment() ? $this->environment()->id() : null,
         ];
 
         return $json;

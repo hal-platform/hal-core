@@ -11,9 +11,8 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Hal\Core\Entity\Application;
 use Hal\Core\Entity\Environment;
-use Hal\Core\Entity\Target;
-use Hal\Core\Entity\JobType\Build;
 use Hal\Core\Entity\JobType\Release;
+use Hal\Core\Entity\Target;
 use Hal\Core\Type\JobStatusEnum;
 use Hal\Core\Utility\PagedResultsTrait;
 
@@ -97,7 +96,7 @@ SQL_QUERY;
         $params = [
             'target' => $target,
             'release_status' => JobStatusEnum::TYPE_SUCCESS,
-            'build_status' => JobStatusEnum::TYPE_SUCCESS
+            'build_status' => JobStatusEnum::TYPE_SUCCESS,
         ];
 
         return $this->getPaginator($dql, $limit, $page, $params);
@@ -166,7 +165,7 @@ SQL_QUERY;
 
         $params = [
             'application' => $application,
-            'environment' => $environment
+            'environment' => $environment,
         ];
 
         if ($filter) {

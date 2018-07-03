@@ -47,7 +47,7 @@ class JobEventStageEnum
 
             self::TYPE_FINISHED,
             self::TYPE_SUCCESS,
-            self::TYPE_FAILURE
+            self::TYPE_FAILURE,
         ];
     }
 

@@ -18,8 +18,8 @@ use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class DI
 {
@@ -109,7 +109,7 @@ class DI
         $exploded = explode('\\', $class);
         $config = array_merge($options, [
             'class' => array_pop($exploded),
-            'namespace' => implode('\\', $exploded)
+            'namespace' => implode('\\', $exploded),
         ]);
 
         $dumper = self::buildDumper($container);
@@ -179,7 +179,7 @@ class DI
 
         $loaders = [
             new YamlFileLoader($container, $locator),
-            new PhpFileLoader($container, $locator)
+            new PhpFileLoader($container, $locator),
         ];
 
         $resolver = new LoaderResolver($loaders);

@@ -33,7 +33,7 @@ class AuditActionEnum
         return [
             self::TYPE_CREATE,
             self::TYPE_UPDATE,
-            self::TYPE_DELETE
+            self::TYPE_DELETE,
         ];
     }
 }

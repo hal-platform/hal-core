@@ -85,11 +85,7 @@ jobs:
             - *attach_workspace
             - run:
                 name: 'Run static analysis'
-                command: |
-                    vendor/bin/phpstan analyse \
-                    --configuration=phpstan.neon \
-                    -l 5 \
-                    src
+                command: 'composer run-script analyze'
 
     linting:
         <<: *defaults
@@ -98,15 +94,11 @@ jobs:
 
             - run:
                 name: 'Run syntax check'
-                command: 'vendor/bin/phplint --no-cache --ansi src'
+                command: 'composer run-script lint'
 
             - run:
                 name: 'Run code formatting check'
-                command: |
-                    vendor/bin/phpcs \
-                    -n \
-                    --colors \
-                    src
+                command: 'compose run-script sniff'
 
     security_tests:
         working_directory: '~/project'

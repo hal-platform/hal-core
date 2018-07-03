@@ -17,7 +17,6 @@ use Aws\ElasticBeanstalk\ElasticBeanstalkClient;
 use Aws\ElasticLoadBalancing\ElasticLoadBalancingClient;
 use Aws\S3\S3Client;
 use Aws\Sdk;
-use Aws\ServiceCatalog\ServiceCatalogClient;
 use Aws\Ssm\SsmClient;
 use Hal\Core\Entity\Credential\AWSRoleCredential;
 use Hal\Core\Entity\Credential\AWSStaticCredential;
@@ -243,7 +242,7 @@ class AWSAuthenticator
     {
         if (!in_array($region, self::$awsRegions, true)) {
             $this->logger->critical(self::ERR_INVALID_REGION, [
-                'specified_region' => $region
+                'specified_region' => $region,
             ]);
 
             return null;
@@ -265,7 +264,7 @@ class AWSAuthenticator
 
         return [
             'region' => $region,
-            'credentials' => $credentials
+            'credentials' => $credentials,
         ];
     }
 }

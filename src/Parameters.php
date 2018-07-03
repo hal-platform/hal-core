@@ -7,8 +7,6 @@
 
 namespace Hal\Core;
 
-use InvalidArgumentException;
-
 /**
  * This is just so we centralize these values and they are easy to find/change.
  * Longer term these are more modularized so you can dynamically add a type (and all of its parameters).

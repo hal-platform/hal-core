@@ -66,7 +66,7 @@ class TimePointType extends DateTimeType
      *
      * @return Clock
      */
-    public static function getParsingClock(Clock $clock = null)
+    public static function getParsingClock(?Clock $clock = null)
     {
         if (func_num_args()) {
             self::$clock = $clock;

@@ -34,7 +34,7 @@ class ScheduledActionStatusEnum
             self::TYPE_PENDING,
 
             self::TYPE_ABORTED,
-            self::TYPE_LAUNCHED
+            self::TYPE_LAUNCHED,
         ];
     }
 }

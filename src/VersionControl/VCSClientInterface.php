@@ -46,6 +46,7 @@ interface VCSClientInterface
     /**
      * @param string $user
      * @param string $repo
+     *
      * @return string
      */
     public function urlForRepository(string $user, string $repo): string;

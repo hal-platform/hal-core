@@ -9,7 +9,6 @@ namespace Hal\Core\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Hal\Core\Entity\System\UserIdentityProvider;
 use Hal\Core\Utility\EntityTrait;
 use JsonSerializable;
 use QL\MCP\Common\Time\TimePoint;
@@ -47,7 +46,7 @@ class User implements JsonSerializable
      * @param string $id
      * @param TimePoint|null $created
      */
-    public function __construct($id = '', TimePoint $created = null)
+    public function __construct($id = '', ?TimePoint $created = null)
     {
         $this->initializeEntity($id, $created);
 
@@ -188,7 +187,7 @@ class User implements JsonSerializable
             'settings' => $this->settings(),
 
             'tokens' => $this->tokens()->toArray(),
-            'identities' => $this->identities()->toArray()
+            'identities' => $this->identities()->toArray(),
         ];
 
         return $json;

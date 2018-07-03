@@ -7,8 +7,6 @@
 
 namespace Hal\Core\Entity\User;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Hal\Core\Entity\System\UserIdentityProvider;
 use Hal\Core\Entity\User;
 use Hal\Core\Utility\EntityTrait;
@@ -40,7 +38,7 @@ class UserIdentity implements JsonSerializable
      * @param string $id
      * @param TimePoint|null $created
      */
-    public function __construct($id = '', TimePoint $created = null)
+    public function __construct($id = '', ?TimePoint $created = null)
     {
         $this->initializeEntity($id, $created);
         $this->initializeParameters();
@@ -129,7 +127,7 @@ class UserIdentity implements JsonSerializable
             'parameters' => $this->parameters(),
 
             'provider_unique_id' => $this->providerUniqueID(),
-            'provider_id' => $this->provider()->id()
+            'provider_id' => $this->provider()->id(),
         ];
 
         return $json;

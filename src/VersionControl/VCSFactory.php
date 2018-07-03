@@ -8,7 +8,6 @@
 namespace Hal\Core\VersionControl;
 
 use Hal\Core\Entity\System\VersionControlProvider;
-use Hal\Core\Type\VCSProviderEnum;
 use Hal\Core\Validation\ValidatorErrorTrait;
 
 class VCSFactory
@@ -73,7 +72,7 @@ class VCSFactory
      *
      * @return VCSDownloaderInterface|null
      */
-    public function downloader(VersionControlProvider $vcs):? VCSDownloaderInterface
+    public function downloader(VersionControlProvider $vcs): ?VCSDownloaderInterface
     {
         $adapter = $this->adapters[$vcs->type()] ?? null;
         if (!$adapter) {

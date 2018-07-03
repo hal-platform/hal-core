@@ -41,7 +41,7 @@ class UserToken implements JsonSerializable
      * @param string $id
      * @param TimePoint|null $created
      */
-    public function __construct($id = '', TimePoint $created = null)
+    public function __construct($id = '', ?TimePoint $created = null)
     {
         $this->initializeEntity($id, $created);
 

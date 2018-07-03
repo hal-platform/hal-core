@@ -47,7 +47,7 @@ SQL_QUERY;
      *
      * @return array
      */
-    public function getGroupedTargets(Application $application = null): array
+    public function getGroupedTargets(?Application $application = null): array
     {
         $environments = $this->getEntityManager()
             ->getRepository(Environment::class)
@@ -68,7 +68,7 @@ SQL_QUERY;
         foreach ($environments as $environment) {
             $sorted[$environment->id()] = [
                 'environment' => $environment,
-                'targets' => []
+                'targets' => [],
             ];
         }
 

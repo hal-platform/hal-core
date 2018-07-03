@@ -75,11 +75,11 @@ SQL_QUERY;
     }
 
     /**
-     * @param callable $sorter
+     * @param callable|null $sorter
      *
      * @return Environment[]
      */
-    public function getAllEnvironmentsSorted(callable $sorter = null)
+    public function getAllEnvironmentsSorted(?callable $sorter = null)
     {
         $environments = $this->findAll();
 

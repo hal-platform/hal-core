@@ -31,7 +31,6 @@ use Phinx\Migration\AbstractMigration;
  *
  * - Enums should always be 20 character "VARCHAR"
  *    - Enforcing enum types should always be in the application layer
- *
  */
 class PhinxMigration extends AbstractMigration
 {
@@ -42,7 +41,7 @@ class PhinxMigration extends AbstractMigration
     {
         $table = $this->table($name, [
             'id' => false,
-            'primary_key' => $primary
+            'primary_key' => $primary,
         ]);
 
         $table
@@ -59,7 +58,7 @@ class PhinxMigration extends AbstractMigration
     {
         return [
             'limit' => 20,
-            'default' => $default
+            'default' => $default,
         ];
     }
 

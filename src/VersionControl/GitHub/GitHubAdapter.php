@@ -16,9 +16,9 @@ use Hal\Core\Parameters;
 use Hal\Core\Type\VCSProviderEnum;
 use Hal\Core\Utility\CachingTrait;
 use Hal\Core\Validation\ValidatorErrorTrait;
+use Hal\Core\VersionControl\VCSAdapterInterface;
 use Hal\Core\VersionControl\VCSClientInterface;
 use Hal\Core\VersionControl\VCSDownloaderInterface;
-use Hal\Core\VersionControl\VCSAdapterInterface;
 
 class GitHubAdapter implements VCSAdapterInterface
 {
@@ -123,7 +123,7 @@ class GitHubAdapter implements VCSAdapterInterface
         $options = $this->defaultGuzzleOptions + [
             'base_uri' => $baseURL,
             'headers' => [
-                'Authorization' => sprintf('token %s', $token)
+                'Authorization' => sprintf('token %s', $token),
             ],
 
             'allow_redirects' => true,

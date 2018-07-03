@@ -94,7 +94,7 @@ SQL_QUERY;
 
         $params = [
             'application' => $application,
-            'environment' => $environment
+            'environment' => $environment,
         ];
 
         if ($filter) {

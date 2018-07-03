@@ -39,7 +39,7 @@ class TargetEnum
             self::TYPE_ELB,
             self::TYPE_S3,
             self::TYPE_CD,
-            self::TYPE_SCRIPT
+            self::TYPE_SCRIPT,
         ];
     }
 

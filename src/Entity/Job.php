@@ -9,10 +9,10 @@ namespace Hal\Core\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Hal\Core\Utility\EntityTrait;
-use Hal\Core\Utility\ParameterTrait;
 use Hal\Core\Type\JobEnum;
 use Hal\Core\Type\JobStatusEnum;
+use Hal\Core\Utility\EntityTrait;
+use Hal\Core\Utility\ParameterTrait;
 use JsonSerializable;
 use QL\MCP\Common\Time\TimePoint;
 
@@ -50,7 +50,7 @@ class Job implements JsonSerializable
      * @param string $id
      * @param TimePoint|null $created
      */
-    public function __construct($id = '', TimePoint $created = null)
+    public function __construct($id = '', ?TimePoint $created = null)
     {
         $this->initializeEntity($id, $created);
         $this->initializeParameters();
@@ -230,7 +230,7 @@ class Job implements JsonSerializable
 
             'artifacts' => $this->artifacts()->toArray(),
             'events' => $this->events()->toArray(),
-            'meta' => $this->meta()->toArray()
+            'meta' => $this->meta()->toArray(),
         ];
 
         return $json;

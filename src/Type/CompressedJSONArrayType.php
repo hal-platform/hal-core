@@ -12,14 +12,14 @@
 namespace Hal\Core\Type;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\DBAL\Types\JsonArrayType;
 use Doctrine\DBAL\Types\ConversionException;
+use Doctrine\DBAL\Types\JsonArrayType;
 
 /**
  * A Doctrine Type that stores JSON Arrays with string compression into BLOBs
  *
  * @see https://gist.github.com/baileyp/8275c5774615b45fcbed
+ *
  * @author Peter Bailey <b33tle@gmail.com>
  */
 class CompressedJSONArrayType extends JsonArrayType

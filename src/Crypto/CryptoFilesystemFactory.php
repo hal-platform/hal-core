@@ -29,7 +29,7 @@ class CryptoFilesystemFactory
      * @param string $keyPath
      * @param callable|null $keyLoader
      */
-    public function __construct(string $keyPath, callable $keyLoader = null)
+    public function __construct(string $keyPath, ?callable $keyLoader = null)
     {
         $this->keyPath = $keyPath;
         $this->keyLoader = $keyLoader ?: $this->getDefaultSecretLoader();

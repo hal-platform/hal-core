@@ -58,11 +58,11 @@ class GitHubDownloader implements VCSDownloaderInterface
             rawurlencode($username),
             rawurlencode($repository),
             'tarball',
-            rawurlencode($commit)
+            rawurlencode($commit),
         ]);
 
         $options = [
-            'sink' => new LazyOpenStream($targetFile, 'w+')
+            'sink' => new LazyOpenStream($targetFile, 'w+'),
         ];
 
         try {

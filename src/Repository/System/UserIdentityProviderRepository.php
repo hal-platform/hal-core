@@ -8,8 +8,8 @@
 namespace Hal\Core\Repository\System;
 
 use Doctrine\ORM\EntityRepository;
-use Hal\Core\Entity\User\UserIdentity;
 use Hal\Core\Entity\System\UserIdentityProvider;
+use Hal\Core\Entity\User\UserIdentity;
 
 class UserIdentityProviderRepository extends EntityRepository
 {

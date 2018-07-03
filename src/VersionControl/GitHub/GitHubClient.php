@@ -69,7 +69,7 @@ class GitHubClient implements VCSClientInterface
     {
         $key = sprintf(self::CACHE_KEY_TEMPLATE, md5($user . $repo), 'ref_' . md5($reference));
 
-        if (null !== ($latest = $this->getFromCache($key))) {
+        if (($latest = $this->getFromCache($key)) !== null) {
             return $latest;
         }
 
@@ -108,7 +108,7 @@ class GitHubClient implements VCSClientInterface
     {
         $key = sprintf(self::CACHE_KEY_TEMPLATE, md5($user . $repo), 'repo_url');
 
-        if (null !== ($latest = $this->getFromCache($key))) {
+        if (($latest = $this->getFromCache($key)) !== null) {
             return $latest;
         }
 
@@ -134,7 +134,7 @@ class GitHubClient implements VCSClientInterface
     {
         $key = sprintf(self::CACHE_KEY_TEMPLATE, md5($user . $repo), 'ref_url_' . md5($ref));
 
-        if (null !== ($latest = $this->getFromCache($key))) {
+        if (($latest = $this->getFromCache($key)) !== null) {
             return $latest;
         }
 

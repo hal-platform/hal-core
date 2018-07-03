@@ -163,7 +163,7 @@ class CredentialProvider
 
         return [
             'key' => $credential->key(),
-            'secret' => $secret
+            'secret' => $secret,
         ];
     }
 
@@ -189,7 +189,7 @@ class CredentialProvider
                 'DurationSeconds' => $this->stsLifetime, # 900 - 3600
                 'RoleArn' => sprintf('arn:aws:iam::%s:%s', $account, $role),
                 'RoleSessionName' => 'hal-' . bin2hex(random_bytes(4)), # unique identifier for auditing
-            ]
+            ],
         ]);
 
         $provider = AWSCredentialProvider::memoize($assumeRoleProvider);
@@ -210,7 +210,7 @@ class CredentialProvider
         if ($this->useHostCredentials) {
             return $this->aws->createSts([
                 'region' => $region,
-                'credentials' => $this->hostCredentials
+                'credentials' => $this->hostCredentials,
             ]);
         }
 
@@ -234,7 +234,7 @@ class CredentialProvider
 
         return $this->aws->createSts([
             'region' => $region,
-            'credentials' => $internalCredentials
+            'credentials' => $internalCredentials,
         ]);
     }
 

@@ -9,8 +9,8 @@ namespace Hal\Core\Entity\JobType;
 
 use Hal\Core\Entity\Application;
 use Hal\Core\Entity\Environment;
-use Hal\Core\Entity\Target;
 use Hal\Core\Entity\Job;
+use Hal\Core\Entity\Target;
 use Hal\Core\Type\JobEnum;
 use QL\MCP\Common\Time\TimePoint;
 
@@ -42,7 +42,7 @@ class Release extends Job
      * @param string $id
      * @param TimePoint|null $created
      */
-    public function __construct($id = '', TimePoint $created = null)
+    public function __construct($id = '', ?TimePoint $created = null)
     {
         parent::__construct($id, $created);
 
