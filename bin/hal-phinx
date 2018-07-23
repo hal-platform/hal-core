@@ -111,6 +111,8 @@ EOF
 
     cd "${tmp_dir}/phinx-${phinx_version}"
 
+    git init &&& git add box.json && git commit -m "dummy"
+
     php "${tmp_dir}/box.phar" compile -vv
 
     mv "${tmp_dir}/phinx-${phinx_version}/phinx-${phinx_version}.phar" \
@@ -129,6 +131,7 @@ function ensure_phinx_installed {
 
     if [ ! -f "${phinx_file}" ] ; then
         ensure_is_installed "curl"
+        ensure_is_installed "git" # box 3.0 fails without git installed https://github.com/humbug/box/issues/66
         ensure_is_installed "php"
         ensure_is_installed "tar"
 
