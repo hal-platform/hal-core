@@ -51,7 +51,7 @@ class DoctrineProxyGenerator
         }
 
         foreach ($metas as $metadata) {
-            echo sprintf('Processing "%s"', $metadata->name) . "\n";
+            echo sprintf('Processing "%s"', $metadata->getName()) . "\n";
         }
 
         // Generate Proxies

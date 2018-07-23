@@ -3,3 +3,6 @@ parameters:
         - '%rootDir%/../../../src/Database/PhinxMigration.php'
     ignoreErrors:
         - '#Call to an undefined method Github\\Api\\ApiInterface::#'
+        - '#Parameter \#1 \$api of method Hal\\Core\\VersionControl\\GitHub\\GitHubClient::callGitHub#'
+        - '#Parameter \#1 \$api of method Hal\\Core\\VersionControl\\GitHub\\RefResolver::callGitHub#'
+        - '#Call to an undefined method object::id()#'
