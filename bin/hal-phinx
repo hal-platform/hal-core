@@ -2,100 +2,145 @@
 
 set -eo pipefail
 
-# declare variables
-work_dir="$( pwd )"
-cur_dir="$( cd "$( dirname "$0" )" && pwd )"
-root_dir="${cur_dir}/.."
+function log {
+  local readonly msg="$@"
+  >&2 echo -e "$msg"
+}
 
-# Detect if this is used in as a composer dependency (in vendor/bin)
-if [ -f "${root_dir}/autoload.php" ] ; then
-    root_dir="${cur_dir}/../.."
-fi
+function ensure_is_installed {
+  local readonly name="$1"
 
-phinx_dir="${root_dir}/.phinx"
+  if [[ ! $(command -v ${name}) ]]; then
+    log "ERROR: The binary '$name' is required by this script but is not installed or in the system's PATH."
+    exit 1
+  fi
+}
 
-box_version="${HAL_BOX_VERSION:-2.7.5}"
-phinx_version="${HAL_PHINX_VERSION:-0.9.2}"
-# fyi box is bugged in 0.9.2 release: 12358597d62913858cd19757d49f020fa17c0b88
+# download and install box
+function download_box {
+    local readonly tmp_dir="$1"
+    local readonly box_version="$2"
 
-if [ ! -d "${phinx_dir}" ] ; then
-    mkdir "${phinx_dir}"
-fi
-
-target_phinx="${phinx_dir}/phinx-${phinx_version}.phar"
-
-if [ ! -f "${target_phinx}" ] ; then
-
-    # download and install box
     cat <<EOF
 -------------------------------------------------------------------------------
-Installing box ${box_version} (https://github.com/box-project/box2)
+Installing box ${box_version} (https://github.com/humbug/box)
 -------------------------------------------------------------------------------
-
 
 EOF
 
+    if [ ! -d "${tmp_dir}" ] ; then
+        mkdir -p "${tmp_dir}"
+    fi
+
     curl -LSs \
-        -o "${phinx_dir}/box.phar" \
-        "https://github.com/box-project/box2/releases/download/${box_version}/box-${box_version}.phar"
+        -o "${tmp_dir}/box.phar" \
+        "https://github.com/humbug/box/releases/download/${box_version}/box.phar"
 
-    chmod +x "${phinx_dir}/box.phar"
+    chmod +x "${tmp_dir}/box.phar"
 
-    # download and install phinx
+}
+
+# download phinx
+function download_phinx {
+    local readonly tmp_dir="$1"
+    local readonly phinx_version="$2"
+
     cat <<EOF
 -------------------------------------------------------------------------------
 Installing phinx ${phinx_version} (https://github.com/cakephp/phinx)
 -------------------------------------------------------------------------------
 
-
 EOF
 
-    # due to bugged 0.9.2 - remove in next version
-    if [ "${phinx_version}" == "0.9.2" ] ; then
-        git clone \
-            "https://github.com/cakephp/phinx.git" \
-            "${phinx_dir}/phinx-${phinx_version}"
-        cd "${phinx_dir}/phinx-${phinx_version}"
-
-        git tag -d "v0.9.2"
-        git tag "v0.9.2" "12358597d62913858cd19757d49f020fa17c0b88"
-        git checkout "v0.9.2"
-    else
-        git clone \
-            --branch "v${phinx_version}" --depth 1 \
-            "https://github.com/cakephp/phinx.git" \
-            "${phinx_dir}/phinx-${phinx_version}"
+    if [ ! -d "${tmp_dir}/phinx-${phinx_version}" ] ; then
+        mkdir -p "${tmp_dir}/phinx-${phinx_version}"
     fi
 
-    cd "${phinx_dir}/phinx-${phinx_version}"
+    curl -LSs \
+        -o "${tmp_dir}/phinx.tgz" \
+        "https://github.com/cakephp/phinx/archive/v${phinx_version}.tar.gz"
+
+    tar -xzf \
+        "${tmp_dir}/phinx.tgz" \
+        --strip-components=1 \
+        --directory="${tmp_dir}/phinx-${phinx_version}"
+
+    curl -LSs \
+        -o "${tmp_dir}/phinx-${phinx_version}/box.json" \
+        "https://raw.githubusercontent.com/cakephp/phinx/v${phinx_version}/box.json" && \
+        sed 's,@git-version@,'"${phinx_version}"',g' -i "${tmp_dir}/phinx-${phinx_version}/box.json"
+
     composer \
         --no-dev \
         --no-interaction \
         --no-progress \
+        --working-dir="${tmp_dir}/phinx-${phinx_version}" \
         install
+}
 
-cat <<EOF
+# compile phinx
+function compile_phinx {
+    local readonly tmp_dir="$1"
+    local readonly phinx_version="$2"
+    local readonly target_phinx="$3"
+
+    local readonly cur_dir="$(pwd)"
+
+    cat <<EOF
 -------------------------------------------------------------------------------
 Compiling phinx phar
 -------------------------------------------------------------------------------
 
 EOF
 
-    php \
-        -d phar.readonly=0 \
-        "${phinx_dir}/box.phar" build
+    cd "${tmp_dir}/phinx-${phinx_version}"
 
-    mv "${phinx_dir}/phinx-${phinx_version}/phinx-v${phinx_version}.phar" \
+    php "${tmp_dir}/box.phar" compile -vv
+
+    mv "${tmp_dir}/phinx-${phinx_version}/phinx-${phinx_version}.phar" \
        "${target_phinx}"
 
-    rm -rf "${phinx_dir}/phinx-${phinx_version}"
+    rm -rf "${tmp_dir}/phinx-${phinx_version}"
 
-    cd "${root_dir}"
+    cd "${cur_dir}"
+}
+
+function ensure_phinx_installed {
+    local readonly tmp_dir="$1"
+    local readonly phinx_file="$2"
+    local readonly box_version="$3"
+    local readonly phinx_version="$4"
+
+    if [ ! -f "${phinx_file}" ] ; then
+        ensure_is_installed "curl"
+        ensure_is_installed "php"
+        ensure_is_installed "tar"
+
+        download_box   "${tmp_dir}" "${box_version}"
+        download_phinx "${tmp_dir}" "${phinx_version}"
+        compile_phinx  "${tmp_dir}" "${phinx_version}" "${phinx_file}"
+    fi
+}
+
+# declare variables
+cur_dir="$( cd "$( dirname "$0" )" && pwd )"
+box_version="${HAL_BOX_VERSION:-3.0.0-beta.4}"
+phinx_version="${HAL_PHINX_VERSION:-0.10.5}"
+
+# Detect if this is used in as a composer dependency (in vendor/bin)
+root_dir="${cur_dir}/.."
+if [ -f "${root_dir}/autoload.php" ] ; then
+    root_dir="${cur_dir}/../.."
 fi
 
+phinx_dir="${root_dir}/.phinx"
+target_phinx="${phinx_dir}/phinx-${phinx_version}.phar"
+
+ensure_phinx_installed "${phinx_dir}" "$target_phinx" "${box_version}" "${phinx_version}"
+
 # Include phinx secrets if present in working dir
-if [ -f  "${work_dir}/phinx.secrets" ] ; then
-    source "${work_dir}/phinx.secrets"
+if [ -f  "$(pwd)/phinx.secrets" ] ; then
+    source "$(pwd)/phinx.secrets"
 fi
 
 "${target_phinx}" $@
