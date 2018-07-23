@@ -32,6 +32,10 @@ EOF
         mkdir -p "${tmp_dir}"
     fi
 
+    if [ -f "${tmp_dir}/box.phar" ] ; then
+        return
+    fi
+
     curl -LSs \
         -o "${tmp_dir}/box.phar" \
         "https://github.com/humbug/box/releases/download/${box_version}/box.phar"
@@ -45,12 +49,17 @@ function download_phinx {
     local readonly tmp_dir="$1"
     local readonly phinx_version="$2"
 
+    local box_config_file="${tmp_dir}/phinx-${phinx_version}/box.json"
+
     cat <<EOF
 -------------------------------------------------------------------------------
 Installing phinx ${phinx_version} (https://github.com/cakephp/phinx)
 -------------------------------------------------------------------------------
 
 EOF
+    if [ -d "${tmp_dir}/phinx-${phinx_version}" ] ; then
+        return
+    fi
 
     if [ ! -d "${tmp_dir}/phinx-${phinx_version}" ] ; then
         mkdir -p "${tmp_dir}/phinx-${phinx_version}"
@@ -67,8 +76,15 @@ EOF
 
     curl -LSs \
         -o "${tmp_dir}/phinx-${phinx_version}/box.json" \
-        "https://raw.githubusercontent.com/cakephp/phinx/v${phinx_version}/box.json" && \
-        sed 's,@git-version@,'"${phinx_version}"',g' -i "${tmp_dir}/phinx-${phinx_version}/box.json"
+        "https://raw.githubusercontent.com/cakephp/phinx/v${phinx_version}/box.json"
+
+    php -r '
+    $config = json_decode(file_get_contents("'${box_config_file}'"), true);
+    $config["output"] = "phinx-'${phinx_version}'.phar";
+    $config["exclude-composer-files"] = false;
+    $config["finder"][] = ["name" => "*", "in" => "vendor/composer"];
+    file_put_contents("'${box_config_file}'", json_encode($config, \JSON_PRETTY_PRINT));
+    '
 
     composer \
         --no-dev \
