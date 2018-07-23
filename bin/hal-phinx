@@ -111,7 +111,7 @@ EOF
 
     cd "${tmp_dir}/phinx-${phinx_version}"
 
-    git init &&& git add box.json && git commit -m "dummy"
+    git init && git add box.json && git commit -m "dummy"
 
     php "${tmp_dir}/box.phar" compile -vv
 
