@@ -83,10 +83,9 @@ EOF
     $config["output"] = "phinx-'${phinx_version}'.phar";
     $config["exclude-composer-files"] = false;
     $config["finder"][] = ["name" => "*", "in" => "vendor/composer"];
+    unset($config["git-version"]);
     file_put_contents("'${box_config_file}'", json_encode($config, \JSON_PRETTY_PRINT));
     '
-
-    cat $box_config_file
 
     composer \
         --no-dev \
