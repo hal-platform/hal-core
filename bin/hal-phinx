@@ -83,6 +83,7 @@ EOF
     $config["output"] = "phinx-'${phinx_version}'.phar";
     $config["exclude-composer-files"] = false;
     $config["finder"][] = ["name" => "*", "in" => "vendor/composer"];
+    unset($config["git-version"]);
     file_put_contents("'${box_config_file}'", json_encode($config, \JSON_PRETTY_PRINT));
     '
 
@@ -111,8 +112,9 @@ EOF
 
     cd "${tmp_dir}/phinx-${phinx_version}"
 
-    git config user.email "you@example.com" && git config user.name "Your Name"
-    git init && git add box.json && git commit -m "dummy"
+    git init && \
+        git config user.email "git@example.com" && git config user.name "gituser" \
+        git add box.json && git commit -m "dummy"
 
     php "${tmp_dir}/box.phar" compile -vv
 
