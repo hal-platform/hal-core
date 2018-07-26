@@ -86,6 +86,8 @@ EOF
     file_put_contents("'${box_config_file}'", json_encode($config, \JSON_PRETTY_PRINT));
     '
 
+    cat $box_config_file
+
     composer \
         --no-dev \
         --no-interaction \
