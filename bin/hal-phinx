@@ -134,7 +134,6 @@ function ensure_phinx_installed {
 
     if [ ! -f "${phinx_file}" ] ; then
         ensure_is_installed "curl"
-        ensure_is_installed "git" # box 3.0 fails without git installed https://github.com/humbug/box/issues/66
         ensure_is_installed "php"
         ensure_is_installed "tar"
 
