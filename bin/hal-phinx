@@ -112,10 +112,6 @@ EOF
 
     cd "${tmp_dir}/phinx-${phinx_version}"
 
-    git init && \
-        git config user.email "git@example.com" && git config user.name "gituser" \
-        git add box.json && git commit -m "dummy"
-
     php "${tmp_dir}/box.phar" compile -vv
 
     mv "${tmp_dir}/phinx-${phinx_version}/phinx-${phinx_version}.phar" \
